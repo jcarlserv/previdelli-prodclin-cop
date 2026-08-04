@@ -79,6 +79,10 @@
   .marca-login h1{font-size:26px;margin:0 0 2px;color:var(--plum-900);font-weight:600;}
   .marca-login p{margin:0;color:var(--ink-400);font-size:14px;}
   .campo{margin-bottom:16px;}
+  .campo.campo-pendente input, .campo.campo-pendente select{
+    border-color:var(--gold-500);background:var(--gold-100);
+  }
+  .campo.campo-pendente label{color:var(--gold-600);}
   .campo label{
     display:block;font-size:12.5px;font-weight:600;letter-spacing:.02em;
     color:var(--ink-600);margin-bottom:6px;text-transform:uppercase;
@@ -166,6 +170,30 @@
 
   .filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
   .filtros .campo{margin-bottom:0;min-width:140px;}
+
+  .campo-multiselect{position:relative;}
+  .botao-multiselect{
+    width:100%;text-align:left;padding:11px 13px;border-radius:9px;border:1.5px solid var(--line);
+    font-size:15px;font-family:'Inter',sans-serif;background:#fff;color:var(--ink-900);cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap;
+  }
+  .botao-multiselect:after{content:'▾';color:var(--ink-400);font-size:12px;}
+  .botao-multiselect:hover{border-color:var(--plum-500);}
+  .botao-multiselect.ativo{border-color:var(--plum-500);}
+  .painel-multiselect{
+    display:none;position:absolute;top:calc(100% + 6px);left:0;z-index:30;
+    background:#fff;border:1.5px solid var(--line);border-radius:10px;box-shadow:var(--shadow);
+    padding:8px;min-width:240px;max-height:260px;overflow-y:auto;
+  }
+  .painel-multiselect.aberto{display:block;}
+  .painel-multiselect .acoes-multiselect{display:flex;gap:8px;padding:2px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:6px;}
+  .painel-multiselect .acoes-multiselect button{
+    background:none;border:none;color:var(--plum-700);font-size:12px;font-weight:600;cursor:pointer;padding:2px 4px;
+  }
+  .painel-multiselect .acoes-multiselect button:hover{text-decoration:underline;}
+  .item-multiselect{display:flex;align-items:center;gap:8px;padding:6px 6px;border-radius:6px;cursor:pointer;font-size:13.5px;}
+  .item-multiselect:hover{background:var(--rose-100);}
+  .item-multiselect input{cursor:pointer;}
 
   .cartao{
     background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
@@ -304,6 +332,7 @@
     <nav class="abas" id="nav-abas"></nav>
     <div class="info-usuario">
       <span>Logado como <b id="nome-usuario-topo"></b></span>
+      <button class="botao sutil pequeno" id="botao-minha-conta">Minha conta</button>
       <button class="botao sutil pequeno" id="botao-sair">Sair</button>
     </div>
   </header>
@@ -313,7 +342,7 @@
     <section class="painel" id="painel-lancamento">
       <div class="cabecalho-painel">
         <div>
-          <h2>Lançamento de atendimento</h2>
+          <h2>Lançamento</h2>
           <p>Registre um atendimento realizado. Os campos com seta são padronizados por lista.</p>
         </div>
       </div>
@@ -341,30 +370,6 @@
     <!-- ---------- GERENCIAL ---------- -->
     <section class="painel" id="painel-editar">
       <div class="cartao">
-        <div class="cabecalho-painel" style="margin-bottom:0;">
-          <div>
-            <h2>Editar lançamentos</h2>
-            <p>Consulte, corrija ou complemente os lançamentos de qualquer profissional.</p>
-          </div>
-          <div class="filtros">
-            <div class="campo">
-              <label>Mês</label>
-              <select id="filtro-mes-gerencial"></select>
-            </div>
-            <div class="campo">
-              <label>Ano</label>
-              <select id="filtro-ano-gerencial"></select>
-            </div>
-            <div class="campo">
-              <label>Profissional</label>
-              <select id="filtro-prof-gerencial"><option value="">Todos</option></select>
-            </div>
-            <button class="botao secundario" id="botao-novo-registro-gerencial">+ Novo registro</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="cartao">
         <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
           <h3 style="margin:0;">Lançamentos do período</h3>
           <div class="filtros">
@@ -376,10 +381,26 @@
               <label>Até</label>
               <input type="date" id="filtro-data-fim" />
             </div>
+            <div class="campo">
+              <label>Profissional</label>
+              <select id="filtro-prof-gerencial"><option value="">Todos</option></select>
+            </div>
+            <div class="campo campo-multiselect">
+              <label>Convênio</label>
+              <button type="button" class="botao-multiselect" id="botao-filtro-convenio">Todos</button>
+              <div class="painel-multiselect" id="painel-filtro-convenio"></div>
+            </div>
+            <div class="campo">
+              <label>Forma de pagamento</label>
+              <select id="filtro-forma-pagamento-gerencial"><option value="">Todas</option></select>
+            </div>
+            <button class="botao secundario" id="botao-novo-registro-gerencial">+ Novo registro</button>
             <button class="botao sutil pequeno" id="botao-limpar-periodo">Limpar período</button>
-            <span id="aviso-filtro-periodo" style="font-size:12.5px;color:var(--gold-600);font-weight:600;align-self:center;"></span>
           </div>
         </div>
+
+        <div class="grade-kpi" id="resumo-financeiro-editar" style="margin-bottom:18px;"></div>
+
         <div class="tabela-scroll">
           <table id="tabela-gerencial"></table>
         </div>
@@ -675,6 +696,26 @@
           Esse nome aparece no cabeçalho do sistema e na tela de login, para todos os usuários.
         </p>
       </div>
+
+      <div class="cartao" style="max-width:620px;">
+        <h3>Listas do sistema</h3>
+        <p style="margin:-8px 0 16px;color:var(--ink-400);font-size:12.5px;">
+          Essas são as opções que aparecem nos menus de Profissional, Convênio, Procedimento etc.
+          Adicionar ou remover aqui atualiza a planilha (aba Listas) direto — sem precisar abrir o Google Sheets.
+        </p>
+        <div class="campo">
+          <label>Lista</label>
+          <select id="config-lista-selecionada"></select>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <input type="text" id="config-novo-item-lista" placeholder="Novo item nessa lista..." style="flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid var(--line);">
+          <button class="botao secundario" id="botao-adicionar-item-lista">Adicionar</button>
+        </div>
+        <div id="config-itens-lista" style="display:flex;flex-wrap:wrap;gap:8px;max-height:280px;overflow-y:auto;padding:4px 0;"></div>
+        <p style="margin:14px 0 0;color:var(--ink-400);font-size:12px;">
+          Remover um item daqui só tira ele das opções futuras — não muda lançamentos que já usaram esse valor.
+        </p>
+      </div>
     </section>
   </main>
 </div>
@@ -694,6 +735,36 @@
   </div>
 </div>
 
+<!-- ===================== MODAL MINHA CONTA ===================== -->
+<div class="sobreposicao" id="sobreposicao-conta">
+  <div class="modal" style="max-width:420px;">
+    <h3>Minha conta</h3>
+    <form id="form-conta">
+      <div class="campo">
+        <label>Nome exibido</label>
+        <input type="text" id="conta-nome" required />
+      </div>
+      <div class="campo">
+        <label>Senha atual</label>
+        <input type="password" id="conta-senha-atual" autocomplete="current-password" required />
+      </div>
+      <div class="campo">
+        <label>Nova senha (deixe em branco para não trocar)</label>
+        <input type="password" id="conta-nova-senha" autocomplete="new-password" />
+      </div>
+      <div class="campo">
+        <label>Confirmar nova senha</label>
+        <input type="password" id="conta-confirmar-senha" autocomplete="new-password" />
+      </div>
+      <div id="conta-mensagem" style="font-size:13px;min-height:18px;margin-bottom:6px;"></div>
+      <div class="modal-acoes">
+        <button type="button" class="botao sutil" id="botao-cancelar-conta">Cancelar</button>
+        <button type="submit" class="botao">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 /* =====================================================================
    CONFIGURAÇÃO
@@ -702,7 +773,7 @@
    MODO DEMONSTRAÇÃO com dados de exemplo guardados só nesta sessão.
 ===================================================================== */
 const CONFIG = {
-  API_URL: "" // <-- cole aqui a URL do seu Web App do Apps Script
+  API_URL: "https://script.google.com/macros/s/AKfycbyJnzOFVrA-zHRHUG62oTkJ92ccqi4TfXRbuyuHnCs7BfArS-o3aNUAvvXf3ZOvl5AH6w/exec" // <-- cole aqui a URL do seu Web App do Apps Script
 };
 
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -714,7 +785,8 @@ const MODO_DEMO = !CONFIG.API_URL;
 const estado = {
   usuario:null, papel:null, nomeProfissional:null,
   listas:{}, abaAtiva:'lancamento',
-  editandoId:null
+  editandoId:null, editandoMes:null, editandoAno:null,
+  conveniosSelecionados:[]
 };
 
 /* ---------------------------------------------------------------------
@@ -799,7 +871,11 @@ function mockApi(acao, dados) {
       if(!achado) return {ok:false, erro:'Usuário ou senha inválidos.'};
       return {ok:true, usuario:achado.usuario, papel:achado.papel, nomeProfissional:achado.nome_profissional};
     }
-    case 'listarListas': return {ok:true, listas:demo.listas};
+    case 'listarListas': {
+      const copiaListas = {};
+      Object.keys(demo.listas).forEach(k=>copiaListas[k]=demo.listas[k].slice());
+      return {ok:true, listas:copiaListas};
+    }
     case 'listarProducao': {
       let registros = demo.producao.slice();
       if(dados.dataInicio || dados.dataFim){
@@ -854,6 +930,26 @@ function mockApi(acao, dados) {
     case 'salvarConfiguracao': {
       demo.configuracoes[dados.chave] = dados.valor;
       return {ok:true};
+    }
+    case 'adicionarItemLista': {
+      if(!demo.listas[dados.coluna]) return {ok:false, erro:'Lista desconhecida.'};
+      const jaExiste = demo.listas[dados.coluna].some(v=>String(v).trim().toUpperCase()===String(dados.valor).trim().toUpperCase());
+      if(jaExiste) return {ok:false, erro:'Esse item já existe nessa lista.'};
+      demo.listas[dados.coluna].push(dados.valor);
+      return {ok:true};
+    }
+    case 'removerItemLista': {
+      if(!demo.listas[dados.coluna]) return {ok:false, erro:'Lista desconhecida.'};
+      demo.listas[dados.coluna] = demo.listas[dados.coluna].filter(v=>v!==dados.valor);
+      return {ok:true};
+    }
+    case 'alterarConta': {
+      const usuario = demo.usuarios.find(u=>u.usuario===dados.usuario);
+      if(!usuario) return {ok:false, erro:'Usuário não encontrado.'};
+      if(usuario.senha !== dados.senhaAtual) return {ok:false, erro:'Senha atual incorreta.'};
+      if(dados.novoNome) usuario.nome_profissional = dados.novoNome;
+      if(dados.novaSenha) usuario.senha = dados.novaSenha;
+      return {ok:true, nomeProfissional: usuario.nome_profissional};
     }
     case 'dashboard': {
       let registros = demo.producao.slice();
@@ -1075,6 +1171,55 @@ document.getElementById('botao-sair').addEventListener('click', ()=>{
 });
 
 /* ---------------------------------------------------------------------
+   MINHA CONTA — trocar nome exibido e/ou senha (qualquer usuário)
+--------------------------------------------------------------------- */
+document.getElementById('botao-minha-conta').addEventListener('click', ()=>{
+  document.getElementById('conta-nome').value = estado.nomeProfissional || '';
+  document.getElementById('conta-senha-atual').value = '';
+  document.getElementById('conta-nova-senha').value = '';
+  document.getElementById('conta-confirmar-senha').value = '';
+  document.getElementById('conta-mensagem').textContent = '';
+  document.getElementById('sobreposicao-conta').classList.add('aberta');
+});
+document.getElementById('botao-cancelar-conta').addEventListener('click', ()=>{
+  document.getElementById('sobreposicao-conta').classList.remove('aberta');
+});
+document.getElementById('sobreposicao-conta').addEventListener('click', (ev)=>{
+  if(ev.target.id==='sobreposicao-conta') document.getElementById('sobreposicao-conta').classList.remove('aberta');
+});
+
+document.getElementById('form-conta').addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const mensagemEl = document.getElementById('conta-mensagem');
+  const novoNome = document.getElementById('conta-nome').value.trim();
+  const senhaAtual = document.getElementById('conta-senha-atual').value;
+  const novaSenha = document.getElementById('conta-nova-senha').value;
+  const confirmarSenha = document.getElementById('conta-confirmar-senha').value;
+
+  if(!novoNome){ mensagemEl.style.color='var(--danger)'; mensagemEl.textContent='O nome não pode ficar em branco.'; return; }
+  if(novaSenha && novaSenha !== confirmarSenha){
+    mensagemEl.style.color = 'var(--danger)';
+    mensagemEl.textContent = 'A nova senha e a confirmação não são iguais.';
+    return;
+  }
+
+  mensagemEl.style.color = 'var(--ink-400)';
+  mensagemEl.textContent = 'Salvando...';
+  const resp = await api('alterarConta', {usuario: estado.usuario, senhaAtual, novoNome, novaSenha});
+  if(!resp.ok){
+    mensagemEl.style.color = 'var(--danger)';
+    mensagemEl.textContent = resp.erro || 'Não foi possível salvar.';
+    return;
+  }
+
+  estado.nomeProfissional = novoNome;
+  document.getElementById('nome-usuario-topo').textContent = novoNome;
+  mensagemEl.style.color = 'var(--teal-700)';
+  mensagemEl.textContent = 'Salvo com sucesso!';
+  setTimeout(()=>document.getElementById('sobreposicao-conta').classList.remove('aberta'), 900);
+});
+
+/* ---------------------------------------------------------------------
    NOME DA CLÍNICA — carregado já na tela de login, salvo na planilha
 --------------------------------------------------------------------- */
 let nomeClinicaAtual = 'Clínica';
@@ -1217,12 +1362,19 @@ function preencherSelectsPeriodo(){
   const anoAtual = hoje.getFullYear();
   const anos = [anoAtual-1, anoAtual, anoAtual+1];
 
-  [['filtro-mes-gerencial'],['filtro-mes-dashboard'],['filtro-mes-analises'],['filtro-mes-metas'],['filtro-mes-critica']].forEach(([id])=>{
+  // A aba Editar usa só o intervalo de datas — começa preenchida com o mês atual inteiro.
+  const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
+  const paraISO = d => d.toISOString().slice(0,10);
+  document.getElementById('filtro-data-inicio').value = paraISO(primeiroDiaMes);
+  document.getElementById('filtro-data-fim').value = paraISO(ultimoDiaMes);
+
+  [['filtro-mes-dashboard'],['filtro-mes-analises'],['filtro-mes-metas'],['filtro-mes-critica']].forEach(([id])=>{
     const sel = document.getElementById(id);
     sel.innerHTML = MESES.map(m=>`<option value="${m}" ${m===mesAtual?'selected':''}>${m}</option>`).join('');
     sel.addEventListener('change', atualizarPainelAtivo);
   });
-  [['filtro-ano-gerencial'],['filtro-ano-dashboard'],['filtro-ano-analises'],['filtro-ano-metas'],['filtro-ano-critica']].forEach(([id])=>{
+  [['filtro-ano-dashboard'],['filtro-ano-analises'],['filtro-ano-metas'],['filtro-ano-critica']].forEach(([id])=>{
     const sel = document.getElementById(id);
     sel.innerHTML = anos.map(a=>`<option value="${a}" ${a===anoAtual?'selected':''}>${a}</option>`).join('');
     sel.addEventListener('change', atualizarPainelAtivo);
@@ -1232,6 +1384,13 @@ function preencherSelectsPeriodo(){
   filtroProf.innerHTML = '<option value="">Todos</option>' +
     (estado.listas.profissionais||[]).map(p=>`<option value="${p}">${p}</option>`).join('');
   filtroProf.addEventListener('change', atualizarPainelAtivo);
+
+  montarMultiselectConvenio();
+
+  const filtroFormaPagamentoGerencial = document.getElementById('filtro-forma-pagamento-gerencial');
+  filtroFormaPagamentoGerencial.innerHTML = '<option value="">Todas</option>' +
+    (estado.listas.formas_pagamento||[]).map(f=>`<option value="${f}">${f}</option>`).join('');
+  filtroFormaPagamentoGerencial.addEventListener('change', atualizarEditar);
 
   const filtroProfCritica = document.getElementById('filtro-prof-critica');
   if(estado.papel==='profissional'){
@@ -1253,8 +1412,17 @@ function preencherSelectsPeriodo(){
   document.getElementById('filtro-data-inicio').addEventListener('change', atualizarEditar);
   document.getElementById('filtro-data-fim').addEventListener('change', atualizarEditar);
   document.getElementById('botao-limpar-periodo').addEventListener('click', ()=>{
-    document.getElementById('filtro-data-inicio').value = '';
-    document.getElementById('filtro-data-fim').value = '';
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
+    const paraISO = d => d.toISOString().slice(0,10);
+    document.getElementById('filtro-data-inicio').value = paraISO(primeiroDiaMes);
+    document.getElementById('filtro-data-fim').value = paraISO(ultimoDiaMes);
+    document.getElementById('filtro-prof-gerencial').value = '';
+    estado.conveniosSelecionados = [];
+    document.querySelectorAll('#painel-filtro-convenio input[type="checkbox"]').forEach(chk=>chk.checked=false);
+    document.getElementById('botao-filtro-convenio').textContent = 'Todos';
+    document.getElementById('filtro-forma-pagamento-gerencial').value = '';
     atualizarEditar();
   });
 }
@@ -1281,7 +1449,7 @@ function definicaoCampos(){
   ];
 }
 
-function renderizarCampo(campo, valorAtual='', prefixo='campo_'){
+function renderizarCampo(campo, valorAtual='', prefixo='campo_', destacar=false){
   const id = prefixo+campo.chave;
   let controle;
   if(campo.tipo==='select'){
@@ -1290,7 +1458,7 @@ function renderizarCampo(campo, valorAtual='', prefixo='campo_'){
   } else {
     controle = `<input type="${campo.tipo}" id="${id}" value="${valorAtual!==undefined?valorAtual:''}" ${campo.travado?'disabled':''} ${campo.tipo==='number'?'step="0.01"':''}/>`;
   }
-  return `<div class="campo"><label>${campo.rotulo}${campo.obrigatorio?' *':''}</label>${controle}</div>`;
+  return `<div class="campo${destacar?' campo-pendente':''}"><label>${campo.rotulo}${campo.obrigatorio?' *':''}${destacar?' <span class="tag tag-alerta" style="margin-left:4px;">preencher</span>':''}</label>${controle}</div>`;
 }
 
 function lerValoresCampos(prefixo='campo_'){
@@ -1361,29 +1529,114 @@ function formatarDataExibicao(iso){
 /* ---------------------------------------------------------------------
    PAINEL: EDITAR (lançamentos do período)
 --------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+   MULTI-SELETOR DE CONVÊNIO — clicar em vários convênios ao mesmo tempo
+--------------------------------------------------------------------- */
+function montarMultiselectConvenio(){
+  const botao = document.getElementById('botao-filtro-convenio');
+  const painel = document.getElementById('painel-filtro-convenio');
+  const convenios = estado.listas.convenios||[];
+
+  painel.innerHTML = `
+    <div class="acoes-multiselect">
+      <button type="button" id="ms-convenio-marcar-todos">Marcar todos</button>
+      <button type="button" id="ms-convenio-limpar">Limpar</button>
+    </div>
+    ${convenios.map((c,i)=>`
+      <label class="item-multiselect">
+        <input type="checkbox" value="${c}" id="ms-convenio-${i}"> ${c}
+      </label>`).join('')}
+  `;
+
+  function atualizarRotuloBotao(){
+    const n = estado.conveniosSelecionados.length;
+    botao.textContent = n===0 ? 'Todos' : (n===1 ? estado.conveniosSelecionados[0] : `${n} selecionados`);
+  }
+  atualizarRotuloBotao();
+
+  painel.querySelectorAll('input[type="checkbox"]').forEach(chk=>{
+    chk.checked = estado.conveniosSelecionados.includes(chk.value);
+    chk.addEventListener('change', ()=>{
+      if(chk.checked) estado.conveniosSelecionados.push(chk.value);
+      else estado.conveniosSelecionados = estado.conveniosSelecionados.filter(v=>v!==chk.value);
+      atualizarRotuloBotao();
+      atualizarEditar();
+    });
+  });
+
+  document.getElementById('ms-convenio-marcar-todos').addEventListener('click', ()=>{
+    estado.conveniosSelecionados = convenios.slice();
+    painel.querySelectorAll('input[type="checkbox"]').forEach(chk=>chk.checked=true);
+    atualizarRotuloBotao();
+    atualizarEditar();
+  });
+  document.getElementById('ms-convenio-limpar').addEventListener('click', ()=>{
+    estado.conveniosSelecionados = [];
+    painel.querySelectorAll('input[type="checkbox"]').forEach(chk=>chk.checked=false);
+    atualizarRotuloBotao();
+    atualizarEditar();
+  });
+
+  botao.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    painel.classList.toggle('aberto');
+    botao.classList.toggle('ativo', painel.classList.contains('aberto'));
+  });
+  document.addEventListener('click', (ev)=>{
+    if(!painel.contains(ev.target) && ev.target!==botao){
+      painel.classList.remove('aberto');
+      botao.classList.remove('ativo');
+    }
+  });
+}
+
+/* ---------------------------------------------------------------------
+   PAINEL: EDITAR (lançamentos do período)
+--------------------------------------------------------------------- */
 async function atualizarEditar(){
-  const mes = document.getElementById('filtro-mes-gerencial').value;
-  const ano = document.getElementById('filtro-ano-gerencial').value;
   const prof = document.getElementById('filtro-prof-gerencial').value;
+  const formaPagamento = document.getElementById('filtro-forma-pagamento-gerencial').value;
   const dataInicio = document.getElementById('filtro-data-inicio').value;
   const dataFim = document.getElementById('filtro-data-fim').value;
-  const filtrandoPorData = !!(dataInicio || dataFim);
 
-  // Quando um intervalo de datas é usado, ele manda mais que mês/ano.
-  document.getElementById('filtro-mes-gerencial').disabled = filtrandoPorData;
-  document.getElementById('filtro-ano-gerencial').disabled = filtrandoPorData;
-  document.getElementById('aviso-filtro-periodo').textContent = filtrandoPorData ? 'Filtrando por intervalo de datas' : '';
   document.getElementById('tabela-gerencial').innerHTML = '<tr><td class="vazio">Carregando lançamentos...</td></tr>';
+  document.getElementById('resumo-financeiro-editar').innerHTML = '';
 
-  const resp = await api('listarProducao', {mes, ano, prof, dataInicio, dataFim});
-  const registros = resp.registros||[];
+  const resp = await api('listarProducao', {prof, dataInicio, dataFim});
+  let registros = resp.registros||[];
+  if(estado.conveniosSelecionados.length){
+    const selecionadosUpper = estado.conveniosSelecionados.map(c=>c.trim().toUpperCase());
+    registros = registros.filter(r => selecionadosUpper.includes(String(r.convenio||'').trim().toUpperCase()));
+  }
+  if(formaPagamento){
+    registros = registros.filter(r => String(r.forma_pagamento||'').trim().toUpperCase() === formaPagamento.trim().toUpperCase());
+  }
+
+  const porFormaPagamento = { 'CONVÊNIO':0, 'PIX':0, 'ESPÉCIE':0, 'CARTÃO':0 };
+  let totalGeral = 0;
+  registros.forEach(r=>{
+    const forma = String(r.forma_pagamento||'').trim().toUpperCase();
+    const valor = Number(r.valor)||0;
+    if(porFormaPagamento.hasOwnProperty(forma)) porFormaPagamento[forma] += valor;
+    totalGeral += valor;
+  });
+  const rotuloConvenios = estado.conveniosSelecionados.length===1 ? ` (${estado.conveniosSelecionados[0]})`
+    : estado.conveniosSelecionados.length>1 ? ` (${estado.conveniosSelecionados.length} convênios)` : '';
+  document.getElementById('resumo-financeiro-editar').innerHTML = `
+    <div class="kpi"><div class="rotulo">Convênio${rotuloConvenios}</div><div class="valor" id="resumo-fp-convenio">${formatarMoeda(porFormaPagamento['CONVÊNIO'])}</div></div>
+    <div class="kpi"><div class="rotulo">Pix</div><div class="valor" id="resumo-fp-pix">${formatarMoeda(porFormaPagamento['PIX'])}</div></div>
+    <div class="kpi"><div class="rotulo">Espécie</div><div class="valor" id="resumo-fp-especie">${formatarMoeda(porFormaPagamento['ESPÉCIE'])}</div></div>
+    <div class="kpi"><div class="rotulo">Cartão</div><div class="valor" id="resumo-fp-cartao">${formatarMoeda(porFormaPagamento['CARTÃO'])}</div></div>
+    <div class="kpi"><div class="rotulo">Total${estado.conveniosSelecionados.length?' filtrado':''}</div><div class="valor teal" id="resumo-fp-total">${formatarMoeda(totalGeral)}</div></div>
+  `;
+
   const tabela = document.getElementById('tabela-gerencial');
   if(registros.length===0){
     tabela.innerHTML = '<tr><td class="vazio">Nenhum lançamento neste período.</td></tr>';
   } else {
     tabela.innerHTML = `
       <thead><tr><th>Data</th><th>Profissional</th><th>Paciente</th><th>Procedimento</th><th>Convênio</th><th>Forma pgto.</th><th>Valor</th><th>Atendente</th><th></th></tr></thead>
-      <tbody>${registros.map(r=>`
+      <tbody>${registros.map((r,i)=>`
         <tr>
           <td>${formatarDataExibicao(r.data)}</td>
           <td>${r.prof||''}</td>
@@ -1393,11 +1646,17 @@ async function atualizarEditar(){
           <td>${r.forma_pagamento||'—'}</td>
           <td class="mono">${formatarMoeda(r.valor)}</td>
           <td>${r.atendente||''}</td>
-          <td class="celula-acoes"><button class="botao sutil pequeno" data-id="${r.id}">Editar</button></td>
+          <td class="celula-acoes"><button class="botao sutil pequeno" data-indice="${i}">Editar</button></td>
         </tr>`).join('')}</tbody>`;
-    tabela.querySelectorAll('button[data-id]').forEach(b=>{
+    // Usa a posição na lista (não o id) para achar o registro certo — assim
+    // funciona mesmo se algum registro antigo tiver o id vazio ou repetido.
+    tabela.querySelectorAll('button[data-indice]').forEach(b=>{
       b.addEventListener('click', ()=>{
-        const registro = registros.find(r=>r.id===b.dataset.id);
+        const registro = registros[Number(b.dataset.indice)];
+        if(!registro.id){
+          alert('Este registro ainda não tem um identificador único (é um dado mais antigo, de antes da planilha ser dividida por mês).\n\nPeça para o administrador abrir o Apps Script e executar a função "repararIdsFaltantes" uma vez — depois disso, este registro poderá ser editado normalmente.');
+          return;
+        }
         abrirModal(registro);
       });
     });
@@ -1430,21 +1689,28 @@ async function atualizarCritica(){
   }
   tabela.innerHTML = `
     <thead><tr><th>Data</th><th>Profissional</th><th>Paciente</th><th>Campos pendentes</th><th></th></tr></thead>
-    <tbody>${incompletos.map(r=>{
+    <tbody>${incompletos.map((r,i)=>{
       const faltando = CAMPOS_CRITICOS.filter(c=>campoCriticoVazio(r,c.chave));
       return `<tr>
         <td>${formatarDataExibicao(r.data)}</td>
         <td>${r.prof||'—'}</td>
         <td>${r.paciente||'—'}</td>
         <td>${faltando.map(c=>`<span class="tag tag-alerta">${c.rotulo}</span>`).join('')}</td>
-        <td class="celula-acoes"><button class="botao secundario pequeno" data-id="${r.id}">Completar</button></td>
+        <td class="celula-acoes"><button class="botao secundario pequeno" data-indice="${i}">Completar</button></td>
       </tr>`;
     }).join('')}</tbody>`;
 
-  tabela.querySelectorAll('button[data-id]').forEach(b=>{
+  // Usa a posição na lista (não o id) para achar o registro certo — assim
+  // funciona mesmo se algum registro antigo tiver o id vazio ou repetido.
+  tabela.querySelectorAll('button[data-indice]').forEach(b=>{
     b.addEventListener('click', ()=>{
-      const registro = incompletos.find(r=>r.id===b.dataset.id);
-      abrirModal(registro);
+      const registro = incompletos[Number(b.dataset.indice)];
+      if(!registro.id){
+        alert('Este registro ainda não tem um identificador único (é um dado mais antigo, de antes da planilha ser dividida por mês).\n\nPeça para o administrador abrir o Apps Script e executar a função "repararIdsFaltantes" uma vez — depois disso, este registro poderá ser completado normalmente.');
+        return;
+      }
+      const faltando = CAMPOS_CRITICOS.filter(c=>campoCriticoVazio(registro,c.chave)).map(c=>c.chave);
+      abrirModal(registro, faltando);
     });
   });
 }
@@ -1455,9 +1721,76 @@ async function atualizarCritica(){
 /* ---------------------------------------------------------------------
    PAINEL: CONFIGURAÇÕES
 --------------------------------------------------------------------- */
+const DEFINICAO_LISTAS_CONFIG = [
+  {chave:'profissionais', rotulo:'Profissionais'},
+  {chave:'convenios', rotulo:'Convênios'},
+  {chave:'procedimentos', rotulo:'Procedimentos'},
+  {chave:'atendentes', rotulo:'Atendentes'},
+  {chave:'turnos', rotulo:'Turnos'},
+  {chave:'formas_pagamento', rotulo:'Formas de pagamento'},
+  {chave:'biopsias_frascos', rotulo:'Biópsia (frascos)'},
+  {chave:'exames', rotulo:'Exames'}
+];
+let listaConfigSelectPronto = false;
+
 async function atualizarConfiguracoes(){
   document.getElementById('config-nome-clinica').value = nomeClinicaAtual;
+  prepararSelectListaConfig();
+  renderizarItensListaConfig();
 }
+
+function prepararSelectListaConfig(){
+  if(listaConfigSelectPronto) return;
+  const sel = document.getElementById('config-lista-selecionada');
+  sel.innerHTML = DEFINICAO_LISTAS_CONFIG.map(d=>`<option value="${d.chave}">${d.rotulo}</option>`).join('');
+  sel.addEventListener('change', renderizarItensListaConfig);
+  document.getElementById('botao-adicionar-item-lista').addEventListener('click', adicionarItemListaConfig);
+  document.getElementById('config-novo-item-lista').addEventListener('keydown', (ev)=>{
+    if(ev.key==='Enter'){ ev.preventDefault(); adicionarItemListaConfig(); }
+  });
+  listaConfigSelectPronto = true;
+}
+
+function renderizarItensListaConfig(){
+  const chave = document.getElementById('config-lista-selecionada').value;
+  const itens = estado.listas[chave]||[];
+  const container = document.getElementById('config-itens-lista');
+  if(itens.length===0){
+    container.innerHTML = '<p class="vazio" style="padding:10px 0;">Nenhum item nessa lista ainda.</p>';
+    return;
+  }
+  container.innerHTML = itens.map(item=>`
+    <span class="tag" style="display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;font-size:12.5px;">
+      ${item}
+      <button type="button" class="botao-remover-item-lista" data-valor="${item.replace(/"/g,'&quot;')}" title="Remover" style="background:none;border:none;cursor:pointer;color:var(--teal-700);font-weight:700;padding:0 2px;font-size:14px;line-height:1;">×</button>
+    </span>`).join('');
+  container.querySelectorAll('.botao-remover-item-lista').forEach(b=>{
+    b.addEventListener('click', ()=>removerItemListaConfig(b.dataset.valor));
+  });
+}
+
+async function adicionarItemListaConfig(){
+  const chave = document.getElementById('config-lista-selecionada').value;
+  const input = document.getElementById('config-novo-item-lista');
+  const valor = input.value.trim();
+  if(!valor) return;
+  const resp = await api('adicionarItemLista', {coluna:chave, valor});
+  if(!resp.ok){ alert(resp.erro || 'Não foi possível adicionar este item.'); return; }
+  if(!estado.listas[chave]) estado.listas[chave] = [];
+  estado.listas[chave].push(valor);
+  input.value = '';
+  renderizarItensListaConfig();
+}
+
+async function removerItemListaConfig(valor){
+  if(!confirm(`Remover "${valor}" desta lista?`)) return;
+  const chave = document.getElementById('config-lista-selecionada').value;
+  const resp = await api('removerItemLista', {coluna:chave, valor});
+  if(!resp.ok){ alert(resp.erro || 'Não foi possível remover este item.'); return; }
+  estado.listas[chave] = (estado.listas[chave]||[]).filter(v=>v!==valor);
+  renderizarItensListaConfig();
+}
+
 document.getElementById('botao-salvar-config').addEventListener('click', async ()=>{
   const valor = document.getElementById('config-nome-clinica').value.trim();
   const botao = document.getElementById('botao-salvar-config');
@@ -1528,10 +1861,14 @@ async function salvarNota(){
 /* ---------------------------------------------------------------------
    MODAL DE EDIÇÃO / CRIAÇÃO
 --------------------------------------------------------------------- */
-function abrirModal(registro){
+function abrirModal(registro, camposPendentes){
   estado.editandoId = registro ? registro.id : null;
+  estado.editandoMes = registro ? registro.mes : null;
+  estado.editandoAno = registro ? registro.ano : null;
   document.getElementById('titulo-modal').textContent = registro ? 'Editar registro' : 'Novo registro';
-  document.getElementById('grade-modal').innerHTML = definicaoCampos().map(c=>renderizarCampo(c, registro? registro[c.chave] : '', 'modal_')).join('');
+  document.getElementById('grade-modal').innerHTML = definicaoCampos()
+    .map(c=>renderizarCampo(c, registro? registro[c.chave] : '', 'modal_', (camposPendentes||[]).includes(c.chave)))
+    .join('');
   document.getElementById('botao-excluir-modal').style.display = registro ? 'inline-flex' : 'none';
   document.getElementById('sobreposicao-modal').classList.add('aberta');
 }
@@ -1544,11 +1881,29 @@ document.getElementById('sobreposicao-modal').addEventListener('click', (ev)=>{ 
 document.getElementById('form-modal').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const registro = lerValoresCampos('modal_');
+  const botaoSalvar = ev.target.querySelector('button[type="submit"]');
+  const rotuloOriginal = botaoSalvar.textContent;
+  botaoSalvar.disabled = true;
+  botaoSalvar.textContent = 'Salvando...';
+
+  let resp;
   if(estado.editandoId){
-    await api('atualizarProducao', {id:estado.editandoId, registro});
+    // mesOriginal/anoOriginal dizem em qual aba mensal (Producao_AAAA_MM) o
+    // registro está guardado hoje — se a data mudar de mês, o backend move
+    // a linha para a aba certa sozinho.
+    resp = await api('atualizarProducao', {id:estado.editandoId, registro, mesOriginal:estado.editandoMes, anoOriginal:estado.editandoAno});
   } else {
-    await api('adicionarProducao', registro);
+    resp = await api('adicionarProducao', registro);
   }
+
+  botaoSalvar.disabled = false;
+  botaoSalvar.textContent = rotuloOriginal;
+
+  if(!resp || !resp.ok){
+    alert('Não foi possível salvar: ' + ((resp && resp.erro) || 'erro desconhecido. Tente novamente.'));
+    return; // mantém o modal aberto, com os dados digitados, para tentar de novo
+  }
+
   fecharModal();
   await atualizarPainelAtivo();
 });
@@ -1556,7 +1911,11 @@ document.getElementById('form-modal').addEventListener('submit', async (ev)=>{
 document.getElementById('botao-excluir-modal').addEventListener('click', async ()=>{
   if(!estado.editandoId) return;
   if(!confirm('Excluir este registro definitivamente?')) return;
-  await api('excluirProducao', {id: estado.editandoId});
+  const resp = await api('excluirProducao', {id: estado.editandoId, mes: estado.editandoMes, ano: estado.editandoAno});
+  if(!resp || !resp.ok){
+    alert('Não foi possível excluir: ' + ((resp && resp.erro) || 'erro desconhecido. Tente novamente.'));
+    return;
+  }
   fecharModal();
   await atualizarPainelAtivo();
 });
